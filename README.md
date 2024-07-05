@@ -52,6 +52,8 @@ GTA V Hotkey Manager is a Python-based tool that allows you to manage various in
 - **F10**: CEO calls a Turreted Limo
 - **F11**: CEO calls an XLS
 - **F12**: CEO Retires
+- **F13**: Register as a CEO
+- **F14**: Register as an MC President
 
 ### Shift + Function Keys
 

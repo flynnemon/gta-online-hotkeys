@@ -59,7 +59,16 @@ config = {
                 },
                 'Retire': []                
             },
-            'Register as Boss': [],
+            'Register as Boss': {
+                'SecuroServ CEO': {
+                    'Start an Organization': [],
+                    'Looking for Work': [],
+                },
+                'Motorcycle Club President': {
+                    'Start a Motorcycle Club': [],
+                    'Looking for Work': [],
+                },
+            },
             'Manage Vehicles': {
                 'Request Personal Vehicle': [],
                 'Request Personal Aircraft': [], 

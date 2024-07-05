@@ -42,9 +42,9 @@ def toggle_context(key):
 
 # Function to update UI based on context
 def update_ui():
-    for key, label in context_labels.items():
+    for key, (label, dot) in context_labels.items():
         color = "green" if context[key] else "red"
-        label.config(bg=color)
+        dot.config(bg=color)
 
 # Action: Open Armor Menu
 def open_armor_menu():
@@ -97,6 +97,16 @@ def call_ceo_xls():
 def ceo_retire():
     log("Action: CEO Retire")
     InteractionMenu(offset()).navigate_to_menu(['CEO', 'Retire'])
+
+# Action: Resiger as CEO
+def register_as_ceo():
+    log("Action: Register as CEO")
+    InteractionMenu(offset()).navigate_to_menu(['CEO', 'Register as Boss', 'SecuroServ CEO', 'Start an Organization'])
+
+# Action: Register as MC President
+def register_as_mc_president():
+    log("Action: Register as MC President")
+    InteractionMenu(offset()).navigate_to_menu(['CEO', 'Register as Boss', 'Motorcycle Club President', 'Start a Motorcycle Club'])
 
 # Action: Call Mechanic
 def call_mechanic():
@@ -176,6 +186,8 @@ hotkey_actions = {
     "f10": call_ceo_turreted_limo,
     "f11": call_ceo_xls,
     "f12": ceo_retire,
+    "f13": register_as_ceo,
+    "f14": register_as_mc_president,
 
     "shift+f5": call_mechanic,
     "shift+f6": call_mors_mutual,
@@ -216,6 +228,12 @@ def start_hotkey_listener():
     print("Hotkey listener started.")
     keyboard.wait()  # Keep the listener running
 
+# Function to update UI based on context
+def update_ui():
+    for key, (label, dot) in context_labels.items():
+        color = "green" if context[key] else "red"
+        dot.config(bg=color)
+
 # Function to log messages to the UI
 def log(message):
     log_text.config(state=tk.NORMAL)
@@ -223,11 +241,41 @@ def log(message):
     log_text.config(state=tk.DISABLED)
     log_text.see(tk.END)
 
+# Function to toggle context from the UI
+def toggle_context_from_ui(key):
+    toggle_context(key)
+    update_ui()
+
+# Function to toggle dark mode
+def toggle_dark_mode():
+    global dark_mode
+    dark_mode = not dark_mode
+    apply_theme()
+
+# Function to apply the current theme
+def apply_theme():
+    bg_color = "#2e2e2e" if dark_mode else "#f0f0f0"
+    fg_color = "#ffffff" if dark_mode else "#000000"
+    for key, (label, dot) in context_labels.items():
+        dot.config(bg="green" if context[key] else "red")
+        frame = dot.master
+        frame.config(bg=bg_color)
+        label.config(bg=bg_color, fg=fg_color)
+        frame.pack_configure(side=tk.TOP, anchor=tk.W, pady=2)
+    root.config(bg=bg_color)
+    context_frame.config(bg=bg_color)
+    log_frame.config(bg=bg_color)
+    log_text.config(bg=bg_color, fg=fg_color, insertbackground=fg_color)
+    toggle_button.config(bg=bg_color, fg=fg_color)
+
 # Create the UI
 root = tk.Tk()
 root.title("GTA V Hotkey Manager")
-root.geometry("400x300")
+root.geometry("500x400")
 
+dark_mode = False
+
+# Context Frame
 context_frame = tk.Frame(root)
 context_frame.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
 
@@ -235,15 +283,24 @@ context_labels = {}
 for key in context:
     frame = tk.Frame(context_frame)
     frame.pack(side=tk.TOP, anchor=tk.W, pady=2)
-    color = "green" if context[key] else "red"
-    label = tk.Label(frame, text=key.capitalize(), bg=color, width=20, anchor=tk.W)
-    label.pack(side=tk.LEFT)
-    context_labels[key] = label
+    dot = tk.Label(frame, text="   ", bg="green" if context[key] else "red", width=2)
+    dot.pack(side=tk.LEFT)
+    label = tk.Label(frame, text=key.capitalize(), width=20, anchor=tk.W)
+    label.pack(side=tk.LEFT, padx=(0, 10))
+    button = tk.Button(frame, text="Toggle", command=lambda k=key: toggle_context_from_ui(k))
+    button.pack(side=tk.LEFT)
+    context_labels[key] = (label, dot)
 
+# Log Frame
 log_frame = tk.Frame(root)
 log_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-log_text = ScrolledText(log_frame, state=tk.DISABLED)
+log_text = ScrolledText(log_frame, state=tk.DISABLED, height=15)
 log_text.pack(fill=tk.BOTH, expand=True)
+
+toggle_button = tk.Button(root, text="Toggle Dark Mode", command=toggle_dark_mode)
+toggle_button.pack(pady=10)
+
+apply_theme()
 
 # Start the hotkey listener in a separate thread
 listener_thread = Thread(target=start_hotkey_listener)
