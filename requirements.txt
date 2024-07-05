@@ -1,3 +1,4 @@
 keyboard
 ahk
 tk
+afk[binary]
